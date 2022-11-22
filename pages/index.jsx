@@ -6,26 +6,50 @@ const Home = () => {
   const [wallet, setWalletAddress] = useState("");
   const [collection, setCollectionAddress] = useState("");
   const [NFTs, setNFTs] = useState([]);
+  const [fetchForCollection, setFetchForCollection] = useState(false);
 
   const fetchNFTs = async () => {
     let nfts;
     console.log("fetching nfts");
+    const apiKey = "1ies5QbTezWH1atYmleFGuywUWWxYxJz";
+    const baseURL = `https://eth-mainnet.g.alchemy.com/nft/v2/${apiKey}/getNFTs/`;
+
     if (!collection.length) {
       // Setup request options:
       var requestOptions = {
         method: "GET",
       };
-      const apiKey = "1ies5QbTezWH1atYmleFGuywUWWxYxJz";
-      const baseURL = `https://eth-mainnet.g.alchemy.com/nft/v2/${apiKey}/getNFTs/`;
+
       const fetchURL = `${baseURL}?owner=${wallet}`;
 
       nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
     } else {
+      console.log("fetching nfts for collection owned by address");
+      const fetchURL = `${baseURL}?owner=${wallet}&contractAddresses%5B%5D=${collection}`;
+      nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
     }
 
     if (nfts) {
       console.log("nfts: ", nfts);
-      // setNFTs(nfts);
+      setNFTs(nfts.ownedNfts);
+    }
+  };
+
+  const fetchNFTsForCollection = async () => {
+    if (collection.length) {
+      var requestOptions = {
+        method: "GET",
+      };
+      const apiKey = "1ies5QbTezWH1atYmleFGuywUWWxYxJz";
+      const baseURL = `https://eth-mainnet.g.alchemy.com/nft/v2/${apiKey}/getNFTsForCollection/`;
+      const fetchURL = `${baseURL}?contractAddress=${collection}&withMetadata=${true}`;
+      const nfts = await fetch(fetchURL, requestOptions).then((data) =>
+        data.json()
+      );
+      if (nfts) {
+        console.log("NFTs in collection", nfts);
+        setNFTs(nfts.nfts);
+      }
     }
   };
 
@@ -45,8 +69,22 @@ const Home = () => {
           placeholder="Add the collection address"
         ></input>
         <label>
-          <input type={"checkbox"}></input>
-          <button onClick={() => fetchNFTs()}>Let's go!</button>
+          <input
+            onChange={(e) => setFetchForCollection(e.target.checked)}
+            type={"checkbox"}
+          ></input>
+          Fetch for collection
+          <button
+            onClick={() => {
+              if (fetchForCollection) {
+                fetchNFTsForCollection();
+              } else {
+                fetchNFTs();
+              }
+            }}
+          >
+            Let's go!
+          </button>
         </label>
       </div>
     </div>
