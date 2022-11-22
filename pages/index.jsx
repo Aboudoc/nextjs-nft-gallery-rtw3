@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
+import { NFTCard } from "../components/nftCard";
 
 const Home = () => {
   const [wallet, setWalletAddress] = useState("");
@@ -74,18 +75,24 @@ const Home = () => {
             type={"checkbox"}
           ></input>
           Fetch for collection
-          <button
-            onClick={() => {
-              if (fetchForCollection) {
-                fetchNFTsForCollection();
-              } else {
-                fetchNFTs();
-              }
-            }}
-          >
-            Let's go!
-          </button>
         </label>
+        <button
+          onClick={() => {
+            if (fetchForCollection) {
+              fetchNFTsForCollection();
+            } else {
+              fetchNFTs();
+            }
+          }}
+        >
+          Let's go!
+        </button>
+      </div>
+      <div>
+        {NFTs.length &&
+          NFTs.map((nft) => {
+            return <NFTCard nft={nft}></NFTCard>;
+          })}
       </div>
     </div>
   );

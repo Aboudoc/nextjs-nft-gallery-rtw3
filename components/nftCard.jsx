@@ -1,3 +1,7 @@
-export const NFTCard = () => {
-  return <div></div>;
+export const NFTCard = ({ nft }) => {
+  return (
+    <div>
+      <p>{nft.title}</p>
+    </div>
+  );
 };
